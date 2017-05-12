@@ -1,5 +1,8 @@
+var express = require('express')
 var https   = require("https");
 var fs      = require("fs");
+
+var app = express()
 
 function generateInvoice(invoice, filename, success, error) {
     var postData = JSON.stringify(invoice);
@@ -58,8 +61,14 @@ var invoice = {
     terms: "No need to submit payment. You will be auto-billed for this invoice."
 };
 
-generateInvoice(invoice, 'invoice.pdf', function() {
-    console.log("Saved invoice to invoice.pdf");
-}, function(error) {
-    console.error(error);
+app.get('/', function (req, res) {
+  generateInvoice(invoice, 'invoice.pdf', function() {
+      console.log("Saved invoice to invoice.pdf");
+  }, function(error) {
+      console.error(error);
+  });
+});
+
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!')
 });
