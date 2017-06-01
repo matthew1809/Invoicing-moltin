@@ -83,7 +83,7 @@ var get_order_items = function(order_id) {
       })
     })
     .then(() => {
-      console.log(invoice.items);
+      //console.log(invoice.items);
       generateInvoice(invoice, 'invoice.pdf', function() {
           console.log("Saved invoice to invoice.pdf");
       }, function(error) {
@@ -99,7 +99,6 @@ var get_order_items = function(order_id) {
 
 app.post('/', function (req, res) {
   pbody = JSON.parse(req.body.resources);
-  //console.log('The body:', pbody);
     order_id = pbody.data.id;
     console.log('the parsed order id is: ' + order_id);
     invoice.to = pbody.data.customer.name;
