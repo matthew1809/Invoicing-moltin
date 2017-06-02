@@ -1,8 +1,9 @@
-var express = require('express')
-var https   = require("https");
-var fs      = require("fs");
+var express    = require('express')
+var https      = require("https");
+var fs         = require("fs");
 var bodyParser = require('body-parser');
-var config = require('./config.js')
+var config     = require('./config.js');
+const nodemailer = require('nodemailer');
 const moltin = require('@moltin/sdk');
 const Moltin = moltin.gateway({
   client_id: config.client_id,
@@ -48,6 +49,35 @@ function generateInvoice(invoice, filename, success, error) {
     }
 }
 
+let transporter = nodemailer.createTransport({
+    service: config.service,
+    auth: {
+        user: config.user,
+        pass: config.pass
+    }
+});
+
+let mailOptions = {
+    from: '"Moltin Store 👻" <invoicingmoltin@gmail.com>', // sender address
+    to: 'matt@moltin.com', // list of receivers
+    subject: 'Your Invoice ✔', // Subject line
+    text: 'Please find your invoice attached', // plain text body
+    html: '<b>Your Invoice</b>', // html body
+    attachments: [{   // file on disk as an attachment
+      filename: 'invoice.pdf',
+      path: './invoice.pdf' // stream this file
+    }]
+};
+
+var sendMail = () => {
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+        return console.log(error);
+    }
+    console.log('Message %s sent: %s', info.messageId, info.response);
+  });
+};
+
 var invoice = {
     logo: "http://invoiced.com/img/logo-invoice.png",
     from: "My Moltin Store",
@@ -83,9 +113,13 @@ var get_order_items = function(order_id) {
       })
     })
     .then(() => {
-      //console.log(invoice.items);
-      generateInvoice(invoice, 'invoice.pdf', function() {
-          console.log("Saved invoice to invoice.pdf");
+      var to = invoice.to + '.pdf';
+      generateInvoice(invoice, to, function() {
+          console.log("Saved invoice to " + to);
+          mailOptions.attachments[0].filename = to;
+          mailOptions.attachments[0].path = './' + to;
+          console.log(mailOptions);
+          return sendMail();
       }, function(error) {
           console.error(error);
       });
