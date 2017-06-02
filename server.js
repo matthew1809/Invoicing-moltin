@@ -60,17 +60,9 @@ var invoice = {
     terms: "No need to submit payment. You will be auto-billed for this invoice."
 };
 
-var order_items = {
-    name: "",
-    quantity: 0,
-    unit_cost: 0
-};
-
 var order_id = ''
 
 var get_order_items = function(order_id) {
-  console.log(order_id)
-
   Moltin.Orders.Items(order_id)
     .then((items) => {
       var data = items.data
