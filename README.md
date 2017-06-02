@@ -21,7 +21,6 @@ var user = ''
 # Your email password
 var pass = ''
 
-
 exports.client_id = client_id;
 exports.client_secret = client_secret;
 exports.service = service;
