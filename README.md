@@ -3,7 +3,7 @@
 This basic application, once running will:
 
 * Listen for moltin orders being created, and automatically generate a PDF invoice for each order.
-* Send an automated email to the customer with their invoice
+* Send an automated email to the customer with their invoice.
 
 ## Setup
 You'll need to create your own config file at the repo root, which should contain the following, but with the empty strings filled in:

@@ -118,7 +118,7 @@ var get_order_items = function(order_id) {
           console.log("Saved invoice to " + to);
           mailOptions.attachments[0].filename = to;
           mailOptions.attachments[0].path = './' + to;
-          console.log(mailOptions);
+          //console.log(mailOptions);
           return sendMail();
       }, function(error) {
           console.error(error);
@@ -135,6 +135,7 @@ app.post('/', function (req, res) {
   pbody = JSON.parse(req.body.resources);
     order_id = pbody.data.id;
     console.log('the parsed order id is: ' + order_id);
+    mailOptions.to = pbody.data.customer.email;
     invoice.to = pbody.data.customer.name;
     invoice.currency = pbody.data.meta.display_price.with_tax.currency;
   return get_order_items(order_id);
