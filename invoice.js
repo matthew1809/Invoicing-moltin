@@ -58,11 +58,11 @@ let transporter = nodemailer.createTransport({
 });
 
 let mailOptions = {
-    from: '"Moltin Store 👻" <invoicingmoltin@gmail.com>', // sender address
+    from: '"reMarkable Store 👻" <invoicingmoltin@gmail.com>', // sender address
     to: 'matt@moltin.com', // list of receivers
-    subject: 'Your Invoice ✔', // Subject line
-    text: 'Please find your invoice attached', // plain text body
-    html: '<b>Your Invoice</b>', // html body
+    subject: 'Your reMarkable Invoice ✔', // Subject line
+    text: 'Please find your reMarkable invoice attached', // plain text body
+    html: '<b>Your reMarkable Invoice</b>', // html body
     attachments: [{   // file on disk as an attachment
       filename: 'invoice.pdf',
       path: './invoice.pdf' // stream this file
