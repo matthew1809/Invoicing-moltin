@@ -1,0 +1,55 @@
+{
+  "name": "PDF invoicing for moltin",
+  "description": "Resistance is futile",
+  "keywords": [
+    "moltin",
+    "express",
+    "invoice"
+  ],
+  "website": "https://moltin.com/",
+  "repository": "https://github.com/matthew1809/Invoicing-moltin",
+  "logo": "https://small-sharp-tool.com/logo.svg",
+  "success_url": "/test",
+  "env": {
+    "client_id": {
+      "description": "Your unique moltin client ID for your store. Can be found on the homepage of your store in dashboard.moltin.com",
+      "value": "secret",
+      "required": 1
+    },
+    "client_secret": {
+      "description": "Your moltin client secret for your store. Can be found on the homepage of your store in dashboard.moltin.com",
+      "value": "",
+      "required": 1
+    },
+    "service": {
+      "description": "Email service you are using to send the invoice i.e. gmail",
+      "value": "gmail",
+      "required": 1
+    },
+    "user": {
+      "description": "full email address for the choen service",
+      "value": "bobsburgers@gmail.com",
+      "required": 1
+    },
+    "pass": {
+      "description": "password for the given user of the given email service",
+      "value": "",
+      "required": 1
+    },
+    "albumBucketName": {
+      "description": "The name of your s3 bucket",
+      "value": "",
+      "required": 0
+    },
+    "bucketRegion": {
+      "description": "Region of your s3 bucket",
+      "value": "",
+      "required": 0
+    },
+    "IdentityPoolId": {
+      "description": "none",
+      "value": "",
+      "required": 0
+    }
+  }
+}
