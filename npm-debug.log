@@ -9,7 +9,7 @@
 6 silly lifecycle invoicing@1.0.0~prestart: no script for prestart, continuing
 7 info lifecycle invoicing@1.0.0~start: invoicing@1.0.0
 8 verbose lifecycle invoicing@1.0.0~start: unsafe-perm in lifecycle true
-9 verbose lifecycle invoicing@1.0.0~start: PATH: /Users/mfoyle/.nvm/versions/node/v7.7.2/lib/node_modules/npm/bin/node-gyp-bin:/Users/mfoyle/repos/invoicingProd/node_modules/.bin:/Users/mfoyle/.nvm/versions/node/v7.7.2/bin:/usr/local/bin:/usr/local/sbin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+9 verbose lifecycle invoicing@1.0.0~start: PATH: /Users/mfoyle/.nvm/versions/node/v7.7.2/lib/node_modules/npm/bin/node-gyp-bin:/Users/mfoyle/repos/invoicingProd/node_modules/.bin:/Users/mfoyle/google-cloud-sdk/bin:/Users/mfoyle/.nvm/versions/node/v7.7.2/bin:/usr/local/bin:/usr/local/sbin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 10 verbose lifecycle invoicing@1.0.0~start: CWD: /Users/mfoyle/repos/invoicingProd
 11 silly lifecycle invoicing@1.0.0~start: Args: [ '-c', 'node server.js' ]
 12 silly lifecycle invoicing@1.0.0~start: Returned: code: 1  signal: null
@@ -26,7 +26,7 @@
 14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:226:5)
 15 verbose pkgid invoicing@1.0.0
 16 verbose cwd /Users/mfoyle/repos/invoicingProd
-17 error Darwin 16.5.0
+17 error Darwin 17.0.0
 18 error argv "/Users/mfoyle/.nvm/versions/node/v7.7.2/bin/node" "/Users/mfoyle/.nvm/versions/node/v7.7.2/bin/npm" "start"
 19 error node v7.7.2
 20 error npm  v4.1.2

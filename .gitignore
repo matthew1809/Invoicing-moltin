@@ -1,4 +1,6 @@
 config.js
+npm-debug
 node_modules
 localStorage
+.env
 *.pdf
