@@ -42,7 +42,7 @@ var sendMail = () => {
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
     // uncomment the following line if you want your file uploaded to s3
-    //s3Functions.baseFile('test.pdf');
+    //s3Functions.baseFile('mailOptions.attachments[0].filename');
   });
 };
 
