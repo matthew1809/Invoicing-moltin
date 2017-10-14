@@ -21,11 +21,11 @@ Once you have deployed the app, you'll need to create a moltin webhook and give 
       "url": "http://5e082d80.ngrok.io/orders"
     },
     "observes": [
-      "transaction.updated"
+      "order.created"
     ],
     "enabled": true,
     "type": "integration",
-    "name": "twilio",
+    "name": "invoicing",
     "integration_type": "webhook"
   }
 }'
