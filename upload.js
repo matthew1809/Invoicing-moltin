@@ -1,6 +1,9 @@
 var fs         = require("fs");
 var AWS        = require('aws-sdk');
 
+// require our env package
+require('dotenv').config();
+
 AWS.config.update({
   region: process.env.bucketRegion,
   credentials: new AWS.CognitoIdentityCredentials({
@@ -23,7 +26,7 @@ var upload = (body) => {
       ACL: 'public-read'
     },function (resp) {
       console.log(arguments);
-      console.log('Successfully uploaded package.');
+      console.log('Successfully uploaded package.' + resp);
     });
 
 }

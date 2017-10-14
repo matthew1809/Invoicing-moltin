@@ -1,3 +1,5 @@
+var fs           = require("fs");
+var https        = require("https");
 var exports = module.exports = {};
 
 exports.generateInvoice = function(invoice, filename, success, error) {

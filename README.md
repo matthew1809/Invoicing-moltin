@@ -33,3 +33,6 @@ Once you have deployed the app, you'll need to create a moltin webhook and give 
 
 ## Email
 If using the email feature, you'll have to make sure your gmail account has `less secure apps` turned on. More info here: https://myaccount.google.com/lesssecureapps
+
+## S3
+This app also provides the ability to save PDF invoices to an S3 bucket. *The functionality is a WIPI*.

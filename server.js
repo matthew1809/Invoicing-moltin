@@ -1,20 +1,22 @@
-var express      = require('express')
-var https        = require("https");
-var fs           = require("fs");
-var bodyParser   = require('body-parser');
-var s3Functions  = require('./upload.js');
-var invoice      = require('./invoice.js');
-const nodemailer = require('nodemailer');
-const moltin     = require('@moltin/sdk');
-const Moltin     = moltin.gateway({
-  client_id: process.env.client_id,
-  client_secret: process.env.client_secret,
-});
+const express           = require('express');
+const bodyParser        = require('body-parser');
+const s3Functions       = require('./upload.js');
+const invoiceFunctions  = require('./invoice.js');
+const nodemailer        = require('nodemailer');
+const moltin            = require('@moltin/sdk');
+const Moltin            = moltin.gateway({
+                          client_id: process.env.client_id,
+                          client_secret: process.env.client_secret,
+                        });
+
+// require our env package
+require('dotenv').config();
 
 var app = express();
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded 
 
+// set up our email transporter
 let transporter = nodemailer.createTransport({
     service: process.env.service,
     auth: {
@@ -41,8 +43,8 @@ var sendMail = () => {
         return console.log(error);
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
-    // uncomment the following line if you want your file uploaded to s3
-    //s3Functions.baseFile('mailOptions.attachments[0].filename');
+    // uncomment the following line if you want your files uploaded to S3
+    // s3Functions.baseFile(mailOptions.attachments[0].filename);
   });
 };
 
@@ -68,13 +70,13 @@ var get_order_items = function(order_id) {
         invoice.items.push({
             name: item.name,
             quantity: item.quantity,
-            unit_cost: item.unit_price.amount
+            unit_cost: item.meta.display_price.with_tax.unit.formatted
           });
       });
     })
     .then(() => {
       var to = invoice.to + '.pdf';
-      invoice.generateInvoice(invoice, to, function() {
+      invoiceFunctions.generateInvoice(invoice, to, function() {
           console.log("Saved invoice to " + to);
           mailOptions.attachments[0].filename = to;
           mailOptions.attachments[0].path = './' + to;
