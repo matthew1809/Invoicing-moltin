@@ -11,7 +11,25 @@ This basic application, once running will:
 You'll need to deploy the app and give it the required config vars.
 
 ## Webhook
-Once you have deployed the app, you'll need to create a moltin webhook and give it your apps url in the configuration. Learn more by following the guide at `# Guide URL ToDo`
+Once you have deployed the app, you'll need to create a moltin webhook and give it your apps url in the configuration appended with the  `/orders` route. You can create a moltin webhook like so:
+```
+     -H "Authorization: a5a149059dcdbd640006b1319d17cb1809ab1325" \
+     -H "Content-Type: application/json; charset=utf-8" \
+     -d $'{
+  "data": {
+    "configuration": {
+      "url": "http://5e082d80.ngrok.io/orders"
+    },
+    "observes": [
+      "transaction.updated"
+    ],
+    "enabled": true,
+    "type": "integration",
+    "name": "twilio",
+    "integration_type": "webhook"
+  }
+}'
+```
 
 ## Email
 If using the email feature, you'll have to make sure your gmail account has `less secure apps` turned on. More info here: https://myaccount.google.com/lesssecureapps

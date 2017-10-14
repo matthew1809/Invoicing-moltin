@@ -89,7 +89,7 @@ var get_order_items = function(order_id) {
     });
 };
 
-app.post('/', function (req, res) {
+app.post('/orders', function (req, res) {
   pbody = JSON.parse(req.body.resources);
   order_id = pbody.data.id;
   console.log('the parsed order id is: ' + order_id);
@@ -97,6 +97,10 @@ app.post('/', function (req, res) {
   invoice.to = pbody.data.customer.name;
   invoice.currency = pbody.data.meta.display_price.with_tax.currency;
   return get_order_items(order_id);
+});
+
+app.get('/test', function (req, res) {
+  res.send('app functioning successfully');
 });
 
 app.listen(3000, function () {
