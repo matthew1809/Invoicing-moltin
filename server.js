@@ -1,110 +1,58 @@
-const express           = require('express');
-const bodyParser        = require('body-parser');
-const s3Functions       = require('./upload.js');
-const invoiceFunctions  = require('./invoice.js');
-const nodemailer        = require('nodemailer');
-const moltin            = require('@moltin/sdk');
-const Moltin            = moltin.gateway({
-                          client_id: process.env.client_id,
-                          client_secret: process.env.client_secret,
-                        });
+const express = require('express');
+const { decorateApp } = require('@awaitjs/express');
+const bodyParser = require('body-parser');
+const s3Functions = require('./upload');
+const invoiceHelper = require('./invoiceUtils/invoiceHelper');
+const invoiceTemplate = require('./invoiceUtils/invoiceTemplate');
+const emailHelper = require('./emailUtils/emailHelper');
 
-// require our env package
-require('dotenv').config();
+require('dotenv').load();
 
-var app = express();
+const app = decorateApp(express());
+
 app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded 
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-// set up our email transporter
-let transporter = nodemailer.createTransport({
-    service: process.env.service,
-    auth: {
-        user: process.env.user,
-        pass: process.env.pass
-    }
-});
-
-let mailOptions = {
-    from: '"new Store 👻" <invoicingmoltin@gmail.com>', // sender address
-    to: 'matt@moltin.com', // list of receivers
-    subject: 'Your newstore Invoice ✔', // Subject line
-    text: 'Please find your newstore invoice attached', // plain text body
-    html: '<b>Your newstore Invoice</b>', // html body
-    attachments: [{   // file on disk as an attachment
-      filename: 'invoice.pdf',
-      path: './invoice.pdf' // stream this file
-    }]
-};
-
-var sendMail = () => {
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        return console.log(error);
-    }
-    console.log('Message %s sent: %s', info.messageId, info.response);
-    // uncomment the following line if you want your files uploaded to S3
-    // s3Functions.baseFile(mailOptions.attachments[0].filename);
-  });
-};
-
-var invoice = {
-    logo: "http://invoiced.com/img/logo-invoice.png",
-    from: "My Moltin Store",
-    to: "Johnny Appleseed",
-    currency: "usd",
-    number: "INV-0001",
-    payment_terms: "Auto-Billed - Do Not Pay",
-    items: [],
-    notes: "Thanks for being an awesome customer!",
-    terms: "No need to submit payment. You will be auto-billed for this invoice."
-};
-
-var order_id = '';
-
-var get_order_items = function(order_id) {
-  Moltin.Orders.Items(order_id)
-    .then((items) => {
-      var data = items.data
-      data.forEach((item) => {
-        invoice.items.push({
-            name: item.name,
-            quantity: item.quantity,
-            unit_cost: item.meta.display_price.with_tax.unit.formatted
-          });
-      });
-    })
-    .then(() => {
-      var to = invoice.to + '.pdf';
-      invoiceFunctions.generateInvoice(invoice, to, function() {
-          console.log("Saved invoice to " + to);
-          mailOptions.attachments[0].filename = to;
-          mailOptions.attachments[0].path = './' + to;
-          return sendMail();
-      }, function(error) {
-          console.error(error);
-      });
-    })
-
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
-app.post('/orders', function (req, res) {
-  pbody = JSON.parse(req.body.resources);
-  order_id = pbody.data.id;
-  console.log('the parsed order id is: ' + order_id);
-  mailOptions.to = pbody.data.customer.email;
-  invoice.to = pbody.data.customer.name;
-  invoice.currency = pbody.data.meta.display_price.with_tax.currency;
-  return get_order_items(order_id);
-});
-
-app.get('/test', function (req, res) {
+app.get('/test', (req, res) => {
   res.send('app functioning successfully');
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.listen(3000, () => {
+  console.log('Invoice app listening on port 3000!');
 });
+
+
+app.postAsync('/orders', async (req, res, next) => {
+  const parsedRequestBody = await parseBody(req);
+
+  const orderId = parsedRequestBody.data.id;
+
+  const clonedInvoiceObject = await cloneInvoiceObjectAndAddInfo(parsedRequestBody.data.customer.name, parsedRequestBody.data.meta.display_price.with_tax.currency);
+
+  const clonedEmailOptionsObject = await cloneEmailOptionsObjectAndAddInfo(parsedRequestBody.data.customer.email);
+
+  return invoiceHelper.generateInvoiceProcess(orderId, clonedInvoiceObject, clonedEmailOptionsObject);
+});
+
+const parseBody = async (req) => {
+  try {
+    return JSON.parse(req.body.resources);
+  } catch (e) {
+    return e;
+  }
+};
+
+const cloneEmailOptionsObjectAndAddInfo = async (recipient) => {
+  const emailOptionsClone = await Object.assign({}, emailHelper.mailOptions);
+  emailOptionsClone.to = recipient;
+  return emailOptionsClone;
+};
+
+const cloneInvoiceObjectAndAddInfo = async (name, currency) => {
+  const invoiceClone = await Object.assign({}, invoiceTemplate.invoice);
+
+  invoiceClone.to = name;
+  invoiceClone.currency = currency;
+
+  return invoiceClone;
+};

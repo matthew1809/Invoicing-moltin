@@ -4,12 +4,14 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "mocha test",
+    "start": "node server.js",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@awaitjs/express": "^0.2.0",
     "@moltin/sdk": "^2.3.0",
     "aws-sdk": "^2.66.0",
     "body-parser": "^1.17.2",
@@ -17,6 +19,14 @@
     "express": "^4.15.3",
     "fs": "0.0.1-security",
     "https": "^1.0.0",
-    "nodemailer": "^4.0.1"
+    "nodemailer": "^4.0.1",
+    "util.promisify": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.12.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "mocha": "^5.2.0"
   }
 }
