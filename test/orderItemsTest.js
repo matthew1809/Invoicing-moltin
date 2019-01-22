@@ -4,8 +4,8 @@ const expect = require('chai').expect;
 const moltin = require('@moltin/sdk');
 
 const Moltin = moltin.gateway({
-  client_id: process.env.client_id,
-  client_secret: process.env.client_secret,
+  client_id: process.env.moltin_client_id,
+  client_secret: process.env.moltin_client_secret,
 });
 
 const getOrderItems = require('../invoiceUtils/invoiceHelper').getOrderItems;

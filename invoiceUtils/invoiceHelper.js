@@ -8,8 +8,8 @@ const emailHelper = require('../emailUtils/emailHelper');
 const invoiceGenerator = require('./invoiceGenerator');
 
 const Moltin = moltin.gateway({
-  client_id: process.env.client_id,
-  client_secret: process.env.client_secret,
+  client_id: process.env.moltin_client_id,
+  client_secret: process.env.moltin_client_secret,
 });
 
 

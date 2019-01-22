@@ -8,7 +8,7 @@ This basic application, once running will:
 * Send an automated email to the customer with their invoice.
 
 ## Setup
-You'll need to deploy the app and give it the required config vars.
+You'll need to deploy the app and give it the required config vars via .env, you're welcome to clone the .example.env and add your own values.
 
 ## Webhook
 Once you have deployed the app, you'll need to create a moltin webhook and give it your apps url in the configuration appended with the  `/orders` route. You can create a moltin webhook like so:

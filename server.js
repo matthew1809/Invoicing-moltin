@@ -1,7 +1,7 @@
 const express = require('express');
 const { decorateApp } = require('@awaitjs/express');
 const bodyParser = require('body-parser');
-const s3Functions = require('./upload');
+const s3Functions = require('./uploadUtils/upload');
 const invoiceHelper = require('./invoiceUtils/invoiceHelper');
 const invoiceTemplate = require('./invoiceUtils/invoiceTemplate');
 const emailHelper = require('./emailUtils/emailHelper');
@@ -42,17 +42,16 @@ const parseBody = async (req) => {
   }
 };
 
-const cloneEmailOptionsObjectAndAddInfo = async (recipient) => {
-  const emailOptionsClone = await Object.assign({}, emailHelper.mailOptions);
+const cloneEmailOptionsObjectAndAddInfo = async (recipient, mailOptions) => {
+  const emailOptionsClone = await Object.assign({}, mailOptions);
   emailOptionsClone.to = recipient;
   return emailOptionsClone;
 };
 
-const cloneInvoiceObjectAndAddInfo = async (name, currency) => {
-  const invoiceClone = await Object.assign({}, invoiceTemplate.invoice);
+const cloneInvoiceObjectAndAddInfo = async (name, currency, invoiceTemplate) => {
+  const invoiceClone = await Object.assign({}, invoiceTemplate);
 
   invoiceClone.to = name;
   invoiceClone.currency = currency;
-
   return invoiceClone;
 };
