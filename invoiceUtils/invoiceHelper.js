@@ -1,20 +1,13 @@
 exports = module.exports;
 
 const util = require('util');
-require('util.promisify').shim();
-
-const moltin = require('@moltin/sdk');
 const emailHelper = require('../emailUtils/emailHelper');
 const invoiceGenerator = require('./invoiceGenerator');
+require('util.promisify').shim();
 
-const Moltin = moltin.gateway({
-  client_id: process.env.moltin_client_id,
-  client_secret: process.env.moltin_client_secret,
-});
+exports.generateInvoiceProcess = Moltin => orderId => invoiceObject => async emailOptionsObject => {
 
-
-exports.generateInvoiceProcess = async (orderId, invoiceObject, emailOptionsObject) => {
-  const items = await exports.getOrderItems(orderId);
+  const items = await exports.getOrderItems(orderId, Moltin);
 
   const invoiceObjectWithItems = await exports.addItemsToInvoiceItems(items, invoiceObject);
 
@@ -25,7 +18,7 @@ exports.generateInvoiceProcess = async (orderId, invoiceObject, emailOptionsObje
   await emailHelper.sendMail(emailOptionsObject);
 };
 
-exports.getOrderItems = async (orderId) => {
+exports.getOrderItems = async (orderId, Moltin) => {
   try {
     const orderItems = await Moltin.Orders.Items(orderId);
     return orderItems.data;
@@ -35,6 +28,7 @@ exports.getOrderItems = async (orderId) => {
 };
 
 exports.addItemsToInvoiceItems = async (items, invoiceObject) => {
+
   await asyncForEach(items, async (item) => {
     invoiceObject.items.push({
       name: item.name,
