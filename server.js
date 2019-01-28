@@ -4,8 +4,8 @@ const { decorateApp } = require('@awaitjs/express');
 const bodyParser = require('body-parser');
 const s3Functions = require('./uploadUtils/upload');
 const invoiceHelper = require('./invoiceUtils/invoiceHelper');
-const invoiceTemplate = require('./invoiceUtils/invoiceTemplate').invoice;
 const emailHelper = require('./emailUtils/emailHelper');
+const invoiceTemplate = require('./invoiceUtils/invoiceTemplate').invoice;
 
 require('dotenv').load();
 
@@ -19,18 +19,12 @@ const app = decorateApp(express());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.listen(3000, () => {
-  console.log('Invoice app listening on port 3000!');
-});
+app.listen(3000);
 
-app.postAsync('/orders', async (req, res, next) => {
+app.postAsync('/orders', async (req) => {
   const parsedRequestBody = parseBody(req);
-
-  const {customer, meta, id} = parsedRequestBody.data;
-
-  const clonedInvoiceObject = cloneInvoiceObjectAndAddInfo(invoiceTemplate);
-  const clonedInvoiceObjectWithInfo = clonedInvoiceObject(customer.name)(meta.display_price.with_tax.currency);
-
+  const { customer, meta, id } = parsedRequestBody.data;
+  const clonedInvoiceObjectWithInfo = cloneInvoiceObjectAndAddInfo(customer.name)(meta.display_price.with_tax.currency);
   const clonedEmailOptionsObject = cloneEmailOptionsObjectAndAddInfo(emailHelper.mailOptions);
   const clonedEmailOptionsObjectWithInfo = clonedEmailOptionsObject(customer.email);
 
@@ -45,18 +39,18 @@ const parseBody = (req) => {
   }
 };
 
-const cloneEmailOptionsObjectAndAddInfo = mailOptions => recipient => {
-  const emailOptionsClone =  Object.assign({}, mailOptions, {
-    to: recipient
+const cloneEmailOptionsObjectAndAddInfo = mailOptions => (recipient) => {
+  const emailOptionsClone = Object.assign({}, mailOptions, {
+    to: recipient,
   });
   Object.freeze(emailOptionsClone);
   return emailOptionsClone;
 };
 
-const cloneInvoiceObjectAndAddInfo = invoiceTemplate => name => currency => {
+const cloneInvoiceObjectAndAddInfo = name => (currency) => {
   const invoiceClone = Object.assign({}, invoiceTemplate, {
     to: name,
-    currency: currency
+    currency,
   });
   Object.freeze(invoiceClone);
   return invoiceClone;

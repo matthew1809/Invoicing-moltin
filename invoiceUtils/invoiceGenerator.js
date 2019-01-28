@@ -3,8 +3,25 @@ exports = module.exports;
 const fs = require('fs');
 const https = require('https');
 
-exports.generateInvoice = function (invoice, filename, success, error) {
+const fileWriter = options => postData => async (filename) => {
+  const file = fs.createWriteStream(filename);
+
+  const req = https.request(options, (res) => {
+    res.on('data', (chunk) => {
+      file.write(chunk);
+    })
+      .on('end', () => {
+        file.end();
+      });
+  });
+
+  req.write(postData);
+  req.end();
+};
+
+exports.generateInvoice = invoice => async (filename) => {
   const postData = JSON.stringify(invoice);
+
   const options = {
     hostname: 'invoice-generator.com',
     port: 443,
@@ -16,24 +33,5 @@ exports.generateInvoice = function (invoice, filename, success, error) {
     },
   };
 
-  const file = fs.createWriteStream(filename);
-
-  const req = https.request(options, (res) => {
-    res.on('data', (chunk) => {
-      file.write(chunk);
-    })
-      .on('end', () => {
-        file.end();
-
-        if (typeof success === 'function') {
-          success();
-        }
-      });
-  });
-  req.write(postData);
-  req.end();
-
-  if (typeof error === 'function') {
-    req.on('error', error);
-  }
+  await fileWriter(options)(postData)(filename);
 };

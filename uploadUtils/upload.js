@@ -24,9 +24,7 @@ const upload = (body) => {
     Key: 'invoice.pdf',
     Body: body,
     ACL: 'public-read',
-  }, function (resp) {
-    return resp;
-  });
+  }, resp => resp);
 };
 
 const baseFile = (file) => {
