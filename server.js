@@ -35,8 +35,8 @@ const cloneEmailOptionsObjectAndAddInfo = mailOptions => (recipient) => {
   const emailOptionsClone = Object.assign({}, mailOptions, {
     to: recipient,
   });
-  Object.freeze(emailOptionsClone);
-  return emailOptionsClone;
+
+  return Object.freeze(emailOptionsClone);
 };
 
 const cloneInvoiceObjectAndAddInfo = name => (currency) => {
@@ -44,6 +44,5 @@ const cloneInvoiceObjectAndAddInfo = name => (currency) => {
     to: name,
     currency,
   });
-  Object.freeze(invoiceClone);
-  return invoiceClone;
+  return Object.freeze(invoiceClone);
 };
