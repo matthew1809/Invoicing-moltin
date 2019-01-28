@@ -16,28 +16,28 @@ const Moltin = moltin.gateway({
 
 const app = decorateApp(express());
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.listen(3000, () => {
   console.log('Invoice app listening on port 3000!');
 });
 
 app.postAsync('/orders', async (req, res, next) => {
-  const parsedRequestBody = await parseBody(req);
+  const parsedRequestBody = parseBody(req);
 
-  const orderId = parsedRequestBody.data.id;
-  const {customer, meta} = parsedRequestBody.data;
+  const {customer, meta, id} = parsedRequestBody.data;
 
-  const clonedInvoiceObject =  cloneInvoiceObjectAndAddInfo(customer.name)(meta.display_price.with_tax.currency)(invoiceTemplate);
+  const clonedInvoiceObject = cloneInvoiceObjectAndAddInfo(invoiceTemplate);
+  const clonedInvoiceObjectWithInfo = clonedInvoiceObject(customer.name)(meta.display_price.with_tax.currency);
 
-  const clonedEmailOptionsObject = cloneEmailOptionsObjectAndAddInfo(customer.email)(emailHelper.mailOptions);
+  const clonedEmailOptionsObject = cloneEmailOptionsObjectAndAddInfo(emailHelper.mailOptions);
+  const clonedEmailOptionsObjectWithInfo = clonedEmailOptionsObject(customer.email);
 
-  return invoiceHelper.generateInvoiceProcess(Moltin)(orderId)(clonedInvoiceObject)(clonedEmailOptionsObject);
+  return invoiceHelper.generateInvoiceProcess(Moltin)(id)(clonedInvoiceObjectWithInfo)(clonedEmailOptionsObjectWithInfo);
 });
 
-const parseBody = async (req) => {
+const parseBody = (req) => {
   try {
     return JSON.parse(req.body.resources);
   } catch (e) {
@@ -45,18 +45,19 @@ const parseBody = async (req) => {
   }
 };
 
-const cloneEmailOptionsObjectAndAddInfo = recipient => mailOptions => {
+const cloneEmailOptionsObjectAndAddInfo = mailOptions => recipient => {
   const emailOptionsClone =  Object.assign({}, mailOptions, {
     to: recipient
   });
+  Object.freeze(emailOptionsClone);
   return emailOptionsClone;
 };
 
-const cloneInvoiceObjectAndAddInfo = name => currency => invoiceTemplate => {
+const cloneInvoiceObjectAndAddInfo = invoiceTemplate => name => currency => {
   const invoiceClone = Object.assign({}, invoiceTemplate, {
     to: name,
     currency: currency
   });
-
+  Object.freeze(invoiceClone);
   return invoiceClone;
 };

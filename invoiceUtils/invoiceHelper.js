@@ -7,18 +7,18 @@ require('util.promisify').shim();
 
 exports.generateInvoiceProcess = Moltin => orderId => invoiceObject => async emailOptionsObject => {
 
-  const items = await exports.getOrderItems(orderId, Moltin);
+  const items = await exports.getOrderItems(orderId)(Moltin);
 
-  const invoiceObjectWithItems = await exports.addItemsToInvoiceItems(items, invoiceObject);
+  const invoiceObjectWithItems = await exports.addItemsToInvoiceItems(items)(invoiceObject);
 
   const savedInvoiceName = await exports.createInvoiceAndSave(invoiceObjectWithItems);
 
-  await exports.setEmailAttachmentOptions(savedInvoiceName, emailOptionsObject);
+  exports.setEmailAttachmentOptions(savedInvoiceName)(emailOptionsObject);
 
   await emailHelper.sendMail(emailOptionsObject);
 };
 
-exports.getOrderItems = async (orderId, Moltin) => {
+exports.getOrderItems = orderId => async Moltin => {
   try {
     const orderItems = await Moltin.Orders.Items(orderId);
     return orderItems.data;
@@ -27,16 +27,20 @@ exports.getOrderItems = async (orderId, Moltin) => {
   }
 };
 
-exports.addItemsToInvoiceItems = async (items, invoiceObject) => {
+exports.addItemsToInvoiceItems = items => async invoiceObject => {
 
-  await asyncForEach(items, async (item) => {
-    invoiceObject.items.push({
+  const newItems = items.map(item => {
+    return {
       name: item.name,
       quantity: item.quantity,
-      unit_cost: item.meta.display_price.with_tax.unit.formatted,
-    });
+      unit_cost: item.meta.display_price.with_tax.unit.formatted
+    }
   });
-  return invoiceObject;
+
+  const InvoiceObjectWithItems = Object.assign({}, invoiceObject, {
+    items: newItems
+  })
+  return InvoiceObjectWithItems;
 };
 
 
@@ -49,7 +53,7 @@ exports.createInvoiceAndSave = async (invoiceObject) => {
   return name;
 };
 
-exports.setEmailAttachmentOptions = async (name, emailOptionsObject) => {
+exports.setEmailAttachmentOptions = name => emailOptionsObject => {
   emailOptionsObject.attachments[0].filename = name;
   emailOptionsObject.attachments[0].path = `./${name}`;
 };
