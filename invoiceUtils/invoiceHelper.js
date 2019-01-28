@@ -2,7 +2,6 @@ exports = module.exports;
 
 const emailHelper = require('../emailUtils/emailHelper');
 const invoiceGenerator = require('./invoiceGenerator').generateInvoice;
-require('util.promisify').shim();
 
 exports.generateInvoiceProcess = Moltin => orderId => invoiceObject => async (emailOptionsObject) => {
   const items = await exports.getOrderItems(orderId)(Moltin);

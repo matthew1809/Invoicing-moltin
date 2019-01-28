@@ -6,7 +6,7 @@ const s3Functions = require('./uploadUtils/upload');
 const invoiceHelper = require('./invoiceUtils/invoiceHelper');
 const emailHelper = require('./emailUtils/emailHelper');
 const invoiceTemplate = require('./invoiceUtils/invoiceTemplate').invoice;
-
+const {parseBody} = require('./parseJson');
 require('dotenv').load();
 
 const Moltin = moltin.gateway({
@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.listen(3000);
 
 app.postAsync('/orders', async (req) => {
-  const parsedRequestBody = parseBody(req);
+  const parsedRequestBody = parseBody(req)(req.body.resources);
   const { customer, meta, id } = parsedRequestBody.data;
   const clonedInvoiceObjectWithInfo = cloneInvoiceObjectAndAddInfo(customer.name)(meta.display_price.with_tax.currency);
   const clonedEmailOptionsObject = cloneEmailOptionsObjectAndAddInfo(emailHelper.mailOptions);
@@ -30,14 +30,6 @@ app.postAsync('/orders', async (req) => {
 
   return invoiceHelper.generateInvoiceProcess(Moltin)(id)(clonedInvoiceObjectWithInfo)(clonedEmailOptionsObjectWithInfo);
 });
-
-const parseBody = (req) => {
-  try {
-    return JSON.parse(req.body.resources);
-  } catch (e) {
-    return e;
-  }
-};
 
 const cloneEmailOptionsObjectAndAddInfo = mailOptions => (recipient) => {
   const emailOptionsClone = Object.assign({}, mailOptions, {
